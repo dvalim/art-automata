@@ -65,7 +65,10 @@ double minx = 1000, miny = 1000, maxx = -1000, maxy = -1000, mind = 1000, maxd =
 double avgx, avgy, avgz;
 bool mult = 0, dist = 1;
 
+double noise_seed;
+
 ofVec3f cam;
+vector<double> hues;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -76,13 +79,14 @@ void ofApp::setup(){
     std::stringstream sstream;
     sstream << std::hex << seed;
     seedstring = sstream.str();
+    noise_seed = ofRandom(1000);
     
     ofSetWindowShape(width, height);
     ofSetBackgroundAuto(false);
     buffer.allocate(width, height);
     ofEnableSmoothing();
     
-    if(ofRandom(1) <= 0.23) mult = 1; //doing wrong 3d projection sometimes looks cool
+    if(ofRandom(1) <= 0.4) mult = 1;//doing wrong 3d projection sometimes looks cool
     
     for(int i = 1; i <= 12; i++) //important to keep these close to 1.0
         a[i] = ofRandom(0.7, 1.2) * (ofRandom(0, 100) > 50 ? -1: 1),
@@ -91,7 +95,7 @@ void ofApp::setup(){
     p[1] = ofRandom(1, 5);
     p[2] = ofRandom(1, 5);
 
-    if(ofRandom(1) <= 0.75) {
+    if(ofRandom(1) <= 0.85) {
         p[1] = ofRandom(-5.99, 0);
         if(ofRandom(1) <= 0.7) p[2] = ofRandom(-4.99, 0);
         v = ofRandom(0.00005, 0.0007);
@@ -146,6 +150,11 @@ void ofApp::setup(){
     }
     
     x = y = z = t = 0;
+    
+    //setup color palette
+    double hue = ofRandom(1);
+    hues.push_back(hue);
+    hues.push_back(fmod(hue+ofRandom(0.4, 0.6), 1));
 }
 
 //--------------------------------------------------------------
@@ -176,20 +185,28 @@ void ofApp::draw(){
         double xxx = ofMap((xx-cam.x)/(zz-cam.z)*(mult ? d : 1/d)+cam.x, minx, maxx, 100, width-100);
         double yyy = ofMap((yy-cam.y)/(zz-cam.z)*(mult ? d : 1/d)+cam.y, miny, maxy, 100, height-100);
         
-        x = xx;
-        y = yy;
-        z = zz;
-        
         if(xxx > 100+gaussian(0, 2) && xxx < width-100+gaussian(0, 2) && yyy > 100+gaussian(0, 2) && yyy < height-100+gaussian(0, 2)) { //borders
             double dd = ofMap(d, mind, maxd, 1, 0.01);
             ofEnableBlendMode(OF_BLENDMODE_ADD);
             //chromatic aberration
-            ofSetColor(255, 0, 0, 15*dd);
+            double scl = 3;//
+            double step = ofMap(sqrt(pow(x-xx, 2)+pow(y-yy, 2)+pow(z-zz, 2)), 0, maxd*2, 0, 1);
+            
+            double hue = ofLerp(hues[0], hues[1], step);
+            ofFloatColor c;
+            c.setHsb(hue, min(step+0.2, 0.75), 1);
+            c.a = 0.08*dd;
+            
+            ofSetColor(c);
             ofDrawRectangle(xxx, yyy, 1, 1);
-            ofSetColor(0, 255, 255, 15*dd);
+            /*ofSetColor(0, 255, 255, 15*dd);
             double offset = ofMap(d, mind, maxd, 2, 0);
-            ofDrawRectangle(xxx+offset, yyy+offset, 1, 1);
+            ofDrawRectangle(xxx+offset, yyy+offset, 1, 1);*/
         }
+        
+        x = xx;
+        y = yy;
+        z = zz;
         
     }
     buffer.end();

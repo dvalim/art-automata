@@ -193,12 +193,14 @@ struct func {
     }
 };
 
+vector<double> base_hues;
 
 struct fract {
-    vector<double> f_weight;
+    vector<double> f_weight, hues, sats;
     vector<func> funcs;
     ofVec3f v;
     func fin;
+    double hue, sat;
     
     int weightedRand() {
         double r = ofRandom(1), w = 0;
@@ -211,9 +213,12 @@ struct fract {
     
     fract(vector<string> chosen_vars) {
         int func_number = ofRandom(2, 15);
-        for(int i = 1; i <= func_number; i++)
-            funcs.push_back(func(chosen_vars)),
+        for(int i = 1; i <= func_number; i++) {
+            funcs.push_back(func(chosen_vars));
             f_weight.push_back(0);
+            hues.push_back(fmod(base_hues[(int)ofRandom(2.99)]+ofRandom(0.025), 1));
+            sats.push_back(ofRandom(1));
+        }
         double f_sum = 0, f_inc = 0.5;
         while(f_sum < 0.99) {
             f_weight[(int)ofRandom(func_number-0.01)] += f_inc;
@@ -221,7 +226,6 @@ struct fract {
             f_inc /= 2;
         }
         fin = func(chosen_vars);
-    
         v = ofVec3f(ofRandom(-1, 1), ofRandom(-1, 1), ofRandom(-1, 1));
     }
     
@@ -229,6 +233,8 @@ struct fract {
         if(isnan(v.x) || isnan(v.y) || isnan(v.z)) v = ofVec3f(ofRandom(-1, 1), ofRandom(-1, 1), ofRandom(-1, 1));
         
         int id = weightedRand();
+        hue = (hue+hues[id])/2;
+        sat = (sat+sats[id])/2;
         v = funcs[id].resolve(v);
         v = fin.resolve(v);
         return v;

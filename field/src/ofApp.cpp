@@ -27,7 +27,6 @@ ofVec2f getOffset( string s ){
 
 void drawStringCentered(string s, float x, float y){
     ofVec2f offset = getOffset(s);
-    ofSetColor(0);
     font.drawString(s, x + offset.x, y + offset.y);
 }
 
@@ -62,8 +61,8 @@ void ofApp::setup() {
     buffer.allocate(width, height);
     
     buffer.begin();
-    ofBackground(255);
-    ofSetColor(0);
+    ofBackground(10);
+    ofSetColor(240);
     drawStringCentered(seedstring, width/2, height-50);
     buffer.end();
     
@@ -75,6 +74,9 @@ void ofApp::setup() {
     for(int i = 1; i <= var_number; i++)
         vars.push_back(randVariation());
     
+    double hue = ofRandom(1);
+    base_hues = {hue, fmod(hue+ofRandom(0.4, 0.6), 1), ofRandom(1)};
+    
     int fract_number = 20;
     for(int i = 1; i <= fract_number; i++)
         fractals.push_back(fract(vars));
@@ -84,6 +86,8 @@ void ofApp::setup() {
     f = ofRandom(0.75, 1.75);
     
     fov = ofRandom(2, 6);
+    
+    
 }
 
 //--------------------------------------------------------------
@@ -116,9 +120,15 @@ void ofApp::draw() {
     buffer.begin();
     for(int i = 1; i <= iterations; i++) {
         for(int j = 0; j < fractals.size(); j++) {
+            ofEnableBlendMode(OF_BLENDMODE_ADD);
             ofVec3f p = fractals[j].step();
+            double hue = fractals[j].hue;
+            double sat = min(fractals[j].sat+0.2, 0.8);
+            ofFloatColor c;
+            c.setHsb(hue, sat, 1);
             double d = sqrt(pow(p.x-cam.x, 2) + pow(p.y-cam.y, 2) + pow(p.z-cam.z, 2));
-            ofSetColor(ofFloatColor(0, 0, 0, 0.05/d));
+            c.a = 0.05/max(1.0, d);
+            ofSetColor(c);
             double r = m*pow(abs(f-d), e);
             for(int k = 1; k <= samples; k++) {
                 auto w = p+rndSphere(r);

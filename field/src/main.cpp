@@ -7,5 +7,4 @@ int main( ){
     //settings.visible = false; //uncomment to hide window
     ofCreateWindow(settings);
     ofRunApp(new ofApp);
-
 }
