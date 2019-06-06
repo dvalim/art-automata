@@ -54,10 +54,10 @@ void drawStringCentered(string s, double x, double y){
 void randomiseParameters() {
     acceleration = ofRandom(0.005, 0.4);
     circle_chance = ofRandom(-0.2, 0.4);
+    if(ofRandom(1.0) <= 0.3) circle_chance = ofRandom(0.8, 1);
     distortion = ofRandom(1.0);
     distort_level = max(0.0, min(1.0, gaussian(0, 0.25)));
     warp = max(0.0, min(1.0, gaussian((ofRandom(1.0) <= 0.3 ? 1 : 0), 1)));
-    if(ofRandom(1.0) <= 0.07) circle_chance = 0.98;
     speed = ofRandom(0.1, 0.35);
     spawn_chance = ofRandom(0.001, 0.015);
     direction = (ofRandom(1.0) <= 0.5 ? 1 : -1);
@@ -113,7 +113,7 @@ void ofApp::setup() {
     buffer.allocate(width, height);
     
     std::vector<int> possible_angles = {20, 45, 60, 90, 120, 160};
-    for(int i = 1; i <= 2; i++)
+    for(int i = 1; i <= (ofRandom(1) <= 0.2 ? 2 : 1); i++)
         angles.push_back(possible_angles[(int)ofRandom(possible_angles.size())]);
     
     if(ofRandom(1.0) <= 0.35) {
@@ -131,8 +131,8 @@ void ofApp::setup() {
     ofBackground(255);
     ofSetColor(0);
     drawStringCentered(seedstring, width/2, height-50);
-    for(int x = 0; x <= width; x++) //grain
-        for(int y = 0; y <= height; y++) {
+    for(int x = 100; x <= width-100; x++) //grain
+        for(int y = 100; y <= height-100; y++) {
             int shade = gaussian(240, 30);
             ofSetColor(shade, shade, shade, 60);
             ofDrawRectangle(x, y, 1, 1);

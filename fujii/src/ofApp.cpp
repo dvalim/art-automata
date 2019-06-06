@@ -190,11 +190,11 @@ void ofApp::draw(){
             ofEnableBlendMode(OF_BLENDMODE_ADD);
             //chromatic aberration
             double scl = 3;//
-            double step = ofMap(sqrt(pow(x-xx, 2)+pow(y-yy, 2)+pow(z-zz, 2)), 0, maxd*2, 0, 1);
+            double step = ofMap(sqrt(pow(x-xx, 2)+pow(y-yy, 2)+pow(z-zz, 2)), 0, maxd*1.5, 0, 1);
             
             double hue = ofLerp(hues[0], hues[1], step);
             ofFloatColor c;
-            c.setHsb(hue, min(step+0.2, 0.75), 1);
+            c.setHsb(hue, min(step+0.3, 0.8), 1);
             c.a = 0.08*dd;
             
             ofSetColor(c);

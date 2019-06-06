@@ -1,5 +1,6 @@
 //refer to tyler hobbs' tutorial on drawing generative watercolor
 //https://tylerxhobbs.com/essays/2017/a-generative-approach-to-simulating-watercolor-paints
+//inspired by Kjetil Golid's work
 
 #include "ofApp.h"
 #include <random>

@@ -77,7 +77,7 @@ void ofApp::setup() {
     double hue = ofRandom(1);
     base_hues = {hue, fmod(hue+ofRandom(0.4, 0.6), 1), ofRandom(1)};
     
-    int fract_number = 20;
+    int fract_number = 15;
     for(int i = 1; i <= fract_number; i++)
         fractals.push_back(fract(vars));
     
@@ -123,7 +123,7 @@ void ofApp::draw() {
             ofEnableBlendMode(OF_BLENDMODE_ADD);
             ofVec3f p = fractals[j].step();
             double hue = fractals[j].hue;
-            double sat = min(fractals[j].sat+0.2, 0.8);
+            double sat = min(fractals[j].sat+0.3, 0.8);
             ofFloatColor c;
             c.setHsb(hue, sat, 1);
             double d = sqrt(pow(p.x-cam.x, 2) + pow(p.y-cam.y, 2) + pow(p.z-cam.z, 2));

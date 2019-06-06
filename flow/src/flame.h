@@ -137,7 +137,7 @@ ofVec3f resolveVariation(string name, ofVec3f v) {
     else if(name == "exponential") return exponential(v);
 }
 
-double noise_seed, noise_scale = 0.2, speed = 0.05;
+double noise_seed, noise_scale = 0.25, speed = 0.03;
 
 vector<pair<string, int> > formula;
 
@@ -168,10 +168,17 @@ ofVec3f sphereNoise(ofVec3f v) {
     return ofVec3f(rad*sin(theta)*cos(phi), rad*sin(theta)*sin(phi), rad*cos(theta));
 }
 
+vector<double> hues;
+
 struct particle {
     ofVec3f pos;
+    double hue, sat;
     particle() {}
-    particle(ofVec3f pos) : pos(pos) {}
+    particle(ofVec3f p) : pos(p) {
+        p /= 10;
+        hue = hues[(int)(ofNoise(p.x, p.y, p.z, noise_seed)*3)];
+        sat = ofNoise(p.x, p.y, p.z, noise_seed);
+    }
     void update() {
         auto v = sphereNoise(pos);
         v = resolveFormula(v);

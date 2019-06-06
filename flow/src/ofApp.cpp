@@ -30,7 +30,6 @@ ofVec2f getOffset( string s ){
 
 void drawStringCentered(string s, float x, float y){
     ofVec2f offset = getOffset(s);
-    ofSetColor(0);
     font.drawString(s, x + offset.x, y + offset.y);
 }
 
@@ -55,28 +54,34 @@ void ofApp::setup() {
     buffer.allocate(width, height);
     
     buffer.begin();
-    ofBackground(255);
-    ofSetColor(0);
+    ofBackground(20);
+    ofSetColor(240);
     drawStringCentered(seedstring, width/2, height-50);
     buffer.end();
     
-    cam = ofVec3f(gaussian(0, 0.1), gaussian(0, 0.1), gaussian(0, 0.1)); //position camera close to origin
+    cam = ofVec3f(gaussian(0, 0.01), gaussian(0, 0.01), -4); //position camera close to origin
     
-    fov = ofRandom(0.5, 1.5);
+    fov = 0.3;
+    speed = ofRandom(0.015, 0.28);
     
     int formula_length = ofRandom(1, 5);
     for(int i = 1; i <= formula_length; i++)
-        formula.push_back({randVariation(), 0});
+        formula.push_back({randVariation(), (int)ofRandom(5)});
     
     for(int i = 1; i <= 12; i++) //parameters used by some variations
         aff.push_back(ofRandom(1.2)*(ofRandom(1) <= 0.5 ? -1 : 1));
     
+    double hue = ofRandom(1);
+    hues = {hue, fmod(hue+ofRandom(0.4, 0.6), 1), ofRandom(1)};
+    
     //setup particles
-    double step = 0.225;
+    double step = 0.15;
     for(double x = -4; x <= 4; x += step)
         for(double y = -4; y <= 4; y += step)
             for(double z = -2; z <= 6; z += step)
                 particles.push_back(particle(ofVec3f(x, y, z)));
+    
+    
 }
 
 //--------------------------------------------------------------
@@ -94,10 +99,15 @@ void ofApp::update() {
 void ofApp::draw() {
     buffer.begin();
     for(auto &i : particles) {
+        ofEnableBlendMode(OF_BLENDMODE_ADD);
         i.update();
         auto p = i.pos;
         double d = sqrt(pow(p.x-cam.x, 2) + pow(p.y-cam.y, 2) + pow(p.z-cam.z, 2)); //distance from camera
-        ofSetColor(ofFloatColor(0, 0, 0, 0.1/d));
+        ofFloatColor c;
+        c.setHsb(i.hue, min(i.sat+0.2, 0.8), 1);
+        c.a = 0.2/d;
+        ofSetColor(c);
+        //ofSetColor(ofFloatColor(0, 0, 0, 0.1/d));
         //3d projection
         double xx = ((p.x-cam.x)/(p.z-cam.z)/d+cam.x)*width/fov+width/2;
         double yy = ((p.y-cam.y)/(p.z-cam.z)/d+cam.y)*height/fov+height/2;
