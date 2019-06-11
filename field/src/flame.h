@@ -216,7 +216,7 @@ struct fract {
         for(int i = 1; i <= func_number; i++) {
             funcs.push_back(func(chosen_vars));
             f_weight.push_back(0);
-            hues.push_back(fmod(base_hues[(int)ofRandom(2.99)]+ofRandom(0.025), 1));
+            hues.push_back(base_hues[(int)ofRandom(2)]);
             sats.push_back(ofRandom(1));
         }
         double f_sum = 0, f_inc = 0.5;

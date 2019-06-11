@@ -9,7 +9,7 @@
 
 int vertex_count = 6;
 int layers = 8;
-int frames_per_layer = 55;
+int frames_per_layer = 50;
 int seed;
 std::string seedstring;
 
@@ -23,8 +23,10 @@ std::mt19937 engine;
 
 double initial_ydeviation = 40;
 double variation_deviation = 0.3;
-double depression_chance = 0.05; //lmao
+double depression_chance = 0.05; //areas with low variance
 double variance_mult = 0.6; //very important
+double yshift = 400;
+double time_limit = 17;
 
 ofTrueTypeFont font;
 
@@ -54,7 +56,7 @@ struct polygon {
             variation.push_back(var);
         }
         
-        y += 400;
+        y += yshift * ofRandom(0.9, 1.1);
         for(int i = vertex_count; i >= 0; i--) {
             vertices.emplace_back(width/vertex_count*i+gaussian(0, 1)*20, y+gaussian(0, 1)*initial_ydeviation);
             double var = std::min(std::max(0.0, gaussian(1, 0.1)), 1.0);
@@ -95,8 +97,10 @@ void ofApp::setup(){
     seedstring = sstream.str();
     
     //randomize variables
-    initial_ydeviation = ofRandom(30, 50);
-    variation_deviation = ofRandom(0.2, 0.4);
+    layers = ofRandom(7, 10);
+    yshift = ofRandom(300, 500);
+    initial_ydeviation = ofRandom(30, 100);
+    variation_deviation = ofRandom(0.1, 0.4);
     depression_chance = ofRandom(0.02, 0.08);
     variance_mult = ofRandom(0.55, 0.65);
     
@@ -116,7 +120,8 @@ void ofApp::setup(){
         ofColor c;
         int aa = hues[(int)ofRandom(3)];
         aa = (aa + (int)ofRandom(20))%255;
-        c.setHsb(aa, ofRandom(90, 250), (ofRandom(1.0) > ofMap(i, 1, layers, 0.9, 0.08) ? ofRandom(20) : ofRandom(220, 250)), 6);
+        //color depends on height
+        c.setHsb(aa, ofRandom(230, 250), (ofRandom(1.0) > ofMap(i, 1, layers, 0.9, 0.08) ? ofRandom(25) : ofRandom(100, 200)), 5);
         ofFloatColor c2 = c;
         c2.a = 0.02;
         colors.push_back(c2);
@@ -132,7 +137,13 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    if(ofGetElapsedTimef()>=20) {
+    if(ofGetElapsedTimef()>=time_limit) {
+        buffer.begin();
+        ofEnableBlendMode(OF_BLENDMODE_MULTIPLY); //bring up the saturation
+        ofSetColor(255);
+        buffer.draw(0, 0);
+        buffer.end();
+        
         ofPixels pix;
         buffer.readToPixels(pix);
         ofSaveImage(pix,"../images/"+seedstring+".jpg");
@@ -172,7 +183,7 @@ void ofApp::draw(){
         }
         i++;
     }
-    ofSetColor(255, 255, 255, 255);
+    ofSetColor(255);
     buffer.draw(0, 0);
 }
 

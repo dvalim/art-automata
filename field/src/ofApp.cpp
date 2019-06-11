@@ -75,13 +75,13 @@ void ofApp::setup() {
         vars.push_back(randVariation());
     
     double hue = ofRandom(1);
-    base_hues = {hue, fmod(hue+ofRandom(0.4, 0.6), 1), ofRandom(1)};
+    base_hues = {hue, fmod(hue+ofRandom(0.4, 0.6), 1)};
     
     int fract_number = 15;
     for(int i = 1; i <= fract_number; i++)
         fractals.push_back(fract(vars));
     
-    m = ofRandom(0.01, 0.0265);
+    m = ofRandom(0.01, 0.1);
     e = ofRandom(1.2, 2.1);
     f = ofRandom(0.75, 1.75);
     

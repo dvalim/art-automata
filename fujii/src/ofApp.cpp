@@ -61,9 +61,10 @@ double ccos(double x, int p) {
     else return pow(cos(x), p);
 }
 
-double minx = 1000, miny = 1000, maxx = -1000, maxy = -1000, mind = 1000, maxd = -1000;
+double mind = 1000, maxd = -1000;
 double avgx, avgy, avgz;
 bool mult = 0, dist = 1;
+double fov = 8;
 
 double noise_seed;
 
@@ -107,7 +108,7 @@ void ofApp::setup(){
     drawStringCentered(seedstring, width/2, height-50);
     buffer.end();
 
-    for(int i = 1; i <= 10000; i++) { //calculate some initial points to setup bounds and averages
+    for(int i = 1; i <= 10000; i++) { //calculate some initial points to setup averages
         double xx = a[1]*ssin(f[1]*x, p[1]) + a[2]*ccos(f[2]*y, p[2]) + a[4]*ssin(f[4]*z, p[1]) + a[5]*ccos(f[5]*t, p[2]);
         double yy = a[6]*ccos(f[6]*x, p[2]) + a[7]*ssin(f[7]*y, p[1]) + a[8]*ccos(f[8]*z, p[2]) + a[8]*ssin(f[8]*t, p[1]);
         double zz = a[9]*ssin(f[9]*x, p[1]) + a[10]*ssin(f[10]*y, p[2]) + a[11]*ccos(f[11]*z, p[1]) + a[12]*ccos(f[12]*t, p[2]);
@@ -115,16 +116,10 @@ void ofApp::setup(){
         x = xx;
         y = yy;
         z = zz;
-        double d = sqrt(x*x+y*y+z*z);
         
         avgx += x;
         avgy += y;
         avgz += z;
-
-        minx = min(minx, x);
-        miny = min(miny, y);
-        maxx = max(maxx, x);
-        maxy = max(maxy, y);
     }
     
     avgx /= 10000;
@@ -182,26 +177,26 @@ void ofApp::draw(){
         double d = sqrt(pow(xx-cam.x, 2)+pow(yy-cam.y, 2)+pow(zz-cam.z, 2)); //distance of point from camera
         
         //3d projection
-        double xxx = ofMap((xx-cam.x)/(zz-cam.z)*(mult ? d : 1/d)+cam.x, minx, maxx, 100, width-100);
-        double yyy = ofMap((yy-cam.y)/(zz-cam.z)*(mult ? d : 1/d)+cam.y, miny, maxy, 100, height-100);
+        
+        double xxx = (xx-cam.x)/(zz-cam.z)*(mult ? d : 1/d)+cam.x;
+        double yyy = (yy-cam.y)/(zz-cam.z)*(mult ? d : 1/d)+cam.y;
+        xxx = xxx*width/fov+width/2;
+        yyy = yyy*height/fov+height/2;
         
         if(xxx > 100+gaussian(0, 2) && xxx < width-100+gaussian(0, 2) && yyy > 100+gaussian(0, 2) && yyy < height-100+gaussian(0, 2)) { //borders
             double dd = ofMap(d, mind, maxd, 1, 0.01);
             ofEnableBlendMode(OF_BLENDMODE_ADD);
-            //chromatic aberration
-            double scl = 3;//
-            double step = ofMap(sqrt(pow(x-xx, 2)+pow(y-yy, 2)+pow(z-zz, 2)), 0, maxd*1.5, 0, 1);
+  
+            //color depends on how far this point is from the previous one
+            double step = ofMap(sqrt(pow(x-xx, 2)+pow(y-yy, 2)+pow(z-zz, 2)), 0, maxd*1.65, 0, 1);
             
             double hue = ofLerp(hues[0], hues[1], step);
             ofFloatColor c;
             c.setHsb(hue, min(step+0.3, 0.8), 1);
-            c.a = 0.08*dd;
+            c.a = 0.15*dd;
             
             ofSetColor(c);
             ofDrawRectangle(xxx, yyy, 1, 1);
-            /*ofSetColor(0, 255, 255, 15*dd);
-            double offset = ofMap(d, mind, maxd, 2, 0);
-            ofDrawRectangle(xxx+offset, yyy+offset, 1, 1);*/
         }
         
         x = xx;
