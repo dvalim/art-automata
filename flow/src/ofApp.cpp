@@ -63,7 +63,7 @@ void ofApp::setup() {
     
     fov = 0.3;
     speed = ofRandom(0.015, 0.28);
-    octaves = ofRandom(1, 3.5);
+    octaves = ofRandom(2, 4);
     
     int formula_length = ofRandom(1, 5);
     for(int i = 1; i <= formula_length; i++)
