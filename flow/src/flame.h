@@ -156,11 +156,20 @@ ofVec3f resolveFormula(ofVec3f v) {
     return w;
 }
 
+int octaves = 2;
+
+double getNoise(double x, double y, double z, double seed) {
+    double n = 0;
+    for(double i = 1, j = 1, k = 1; i <= octaves; i++, j /= 2, k *= 2)
+        n += j * ofNoise(x * k, y * k, z * k, seed);
+    return min(1.0, n);
+}
+
 ofVec3f sphereNoise(ofVec3f v) {
     v *= noise_scale;
-    double phi = ofNoise(v.x, v.y, v.z, noise_seed)*2*PI;
-    double costheta = ofNoise(v.x, v.y, v.z, noise_seed+100)*2-1;
-    double u = ofNoise(v.x, v.y, v.z, noise_seed+1000);
+    double phi = getNoise(v.x, v.y, v.z, noise_seed)*2*PI;
+    double costheta = getNoise(v.x, v.y, v.z, noise_seed+100)*2-1;
+    double u = getNoise(v.x, v.y, v.z, noise_seed+1000);
     
     double theta = acos(costheta);
     double rad = cbrt(u);
@@ -175,9 +184,9 @@ struct particle {
     double hue, sat;
     particle() {}
     particle(ofVec3f p) : pos(p) {
-        p /= 10;
-        hue = hues[(int)(ofNoise(p.x, p.y, p.z, noise_seed)*3)];
-        sat = ofNoise(p.x, p.y, p.z, noise_seed);
+        p /= 5;
+        hue = hues[(int)(getNoise(p.x, p.y, p.z, noise_seed)*3)];
+        sat = getNoise(p.x, p.y, p.z, noise_seed);
     }
     void update() {
         auto v = sphereNoise(pos);

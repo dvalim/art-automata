@@ -9,8 +9,8 @@ std::string seedstring;
 
 std::vector<int> angles;
 
-const int width = 2000;
-const int height = 2000;
+const int width = 1000;
+const int height = 1000;
 double time_limit = 25;
 
 std::mt19937 engine;
@@ -70,12 +70,12 @@ void ofApp::setup() {
 
     cam = ofVec3f(gaussian(0, 0.35), gaussian(0, 0.35), gaussian(0, 0.35)); //position camera close to origin
     
-    int var_number = ofRandom(2, 7.99);
+    int var_number = ofRandom(2, 8);
     for(int i = 1; i <= var_number; i++)
         vars.push_back(randVariation());
     
     double hue = ofRandom(1);
-    base_hues = {hue, fmod(hue+ofRandom(0.4, 0.6), 1)};
+    base_hues = {hue, fmod(hue+ofRandom(0.2, 0.8), 1), fmod(hue+ofRandom(0.2, 0.7), 1)};
     
     int fract_number = 15;
     for(int i = 1; i <= fract_number; i++)
@@ -147,7 +147,6 @@ void ofApp::draw() {
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    
 }
 
 //--------------------------------------------------------------

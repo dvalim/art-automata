@@ -63,6 +63,7 @@ void ofApp::setup() {
     
     fov = 0.3;
     speed = ofRandom(0.015, 0.28);
+    octaves = ofRandom(1, 3.5);
     
     int formula_length = ofRandom(1, 5);
     for(int i = 1; i <= formula_length; i++)
@@ -72,7 +73,7 @@ void ofApp::setup() {
         aff.push_back(ofRandom(1.2)*(ofRandom(1) <= 0.5 ? -1 : 1));
     
     double hue = ofRandom(1);
-    hues = {hue, fmod(hue+ofRandom(0.4, 0.6), 1), ofRandom(1)};
+    hues = {hue, fmod(hue+ofRandom(0.2, 0.8), 1), ofRandom(1)};
     
     //setup particles
     double step = 0.15;
@@ -107,7 +108,6 @@ void ofApp::draw() {
         c.setHsb(i.hue, min(i.sat+0.2, 0.8), 1);
         c.a = 0.2/d;
         ofSetColor(c);
-        //ofSetColor(ofFloatColor(0, 0, 0, 0.1/d));
         //3d projection
         double xx = ((p.x-cam.x)/(p.z-cam.z)/d+cam.x)*width/fov+width/2;
         double yy = ((p.y-cam.y)/(p.z-cam.z)/d+cam.y)*height/fov+height/2;

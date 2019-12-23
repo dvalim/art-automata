@@ -137,6 +137,7 @@ ofVec3f resolveVariation(string name, ofVec3f v, vector<double> aff) {
     else if(name == "power") return power(v);
     else if(name == "bent") return bent(v);
     else if(name == "exponential") return exponential(v);
+    else return v;
 }
 
 ofVec3f affine(ofVec3f v, vector<double> a) {
@@ -172,7 +173,7 @@ struct func {
             vars.push_back(randVariation());
         double w_sum = 0, w_inc = 0.05;
         while(w_sum < 1) {
-            weight[ofRandom(len-0.01)] += w_inc;
+            weight[(int)ofRandom(len)] += w_inc;
             w_sum += w_inc;
         }
     }
@@ -187,7 +188,7 @@ struct func {
             vars.push_back(chooseVariation(available_vars));
         double w_sum = 0, w_inc = 0.05;
         while(w_sum < 1) {
-            weight[ofRandom(len-0.01)] += w_inc;
+            weight[(int)ofRandom(len)] += w_inc;
             w_sum += w_inc;
         }
     }
@@ -216,12 +217,12 @@ struct fract {
         for(int i = 1; i <= func_number; i++) {
             funcs.push_back(func(chosen_vars));
             f_weight.push_back(0);
-            hues.push_back(base_hues[(int)ofRandom(2)]);
-            sats.push_back(ofRandom(1));
+            hues.push_back(base_hues[(int)ofRandom(base_hues.size())]);
+            sats.push_back(ofRandom(1.0));
         }
         double f_sum = 0, f_inc = 0.5;
         while(f_sum < 0.99) {
-            f_weight[(int)ofRandom(func_number-0.01)] += f_inc;
+            f_weight[(int)ofRandom(func_number)] += f_inc;
             f_sum += f_inc;
             f_inc /= 2;
         }

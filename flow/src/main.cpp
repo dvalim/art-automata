@@ -4,7 +4,7 @@
 //========================================================================
 int main( ){
     ofGLFWWindowSettings settings;
-    //settings.visible = false; //uncomment to hide window
+    settings.visible = false; //uncomment to hide window
     ofCreateWindow(settings);
     ofRunApp(new ofApp);
     

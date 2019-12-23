@@ -8,8 +8,8 @@ ofFbo buffer;
 int seed;
 string seedstring;
 
-int width = 2000;
-int height = 2000;
+int width = 1000;
+int height = 1000;
 
 std::mt19937 engine;
 
@@ -69,7 +69,12 @@ double letter_chance;
 double grid_size;
 
 double getNoise(double x, double y, double z) {
-    return ofNoise(x/width*noise_mult, y/height*noise_mult, z)+gaussian(0, 0.2);
+    x = x / width;
+    y = y / width;
+    double n = ofNoise(x, y, z);
+    n += 0.5 * ofNoise(x * 2, y * 2, z);
+    n += 0.25 * ofNoise(x * 4, y * 4, z);
+    return min(1.0, n) + gaussian(0, 0.2);
 }
 
 int rndChar() { //random character from a few interesting blocks
