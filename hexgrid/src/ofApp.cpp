@@ -8,8 +8,8 @@ ofFbo buffer;
 int seed;
 string seedstring;
 
-int width = 1000;
-int height = 1000;
+int width = 2000;
+int height = 2000;
 
 std::mt19937 engine;
 
@@ -73,7 +73,6 @@ double getNoise(double x, double y, double z) {
     y = y / width;
     double n = ofNoise(x, y, z);
     n += 0.5 * ofNoise(x * 2, y * 2, z);
-    n += 0.25 * ofNoise(x * 4, y * 4, z);
     return min(1.0, n) + gaussian(0, 0.2);
 }
 
